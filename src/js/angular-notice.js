@@ -18,7 +18,7 @@
             defaults = theDefaults;
         };
 
-        this.$get = ['$q', '$http', '$timeout', 'ngDialog', '$window', '$rootScope', '$session', function ($q, $http, $timeout, $dialog, $window, $rootScope, $session) {
+        this.$get = ['$q', '$http', '$timeout', 'ngDialog', '$window', '$rootScope', '$session', '$sce', function ($q, $http, $timeout, $dialog, $window, $rootScope, $session, $sce) {
             var serviceInstance = {};
 
             serviceInstance.show = function (obj) {
@@ -35,7 +35,7 @@
                 return serviceInstance.confirm2(msg, onSuccess, onCancel, false, 'Confirmation', 'Confirm', 'Cancel');
             };
 
-            serviceInstance.confirm2 = function (msg, onSuccess, onCancel, neverShowId, title, yesLabel, noLabel) {
+            serviceInstance.confirm2 = function (msg, onSuccess, onCancel, neverShowId, title, yesLabel, noLabel, yesIfIgnore) {
                 var deferred = $q.defer();
                 var promise = deferred.promise;
 
@@ -82,7 +82,11 @@
                             }]
                         });
                     } else {
-                        deferred.resolve();
+                        if ((typeof(yesIfIgnore) === 'undefined') || yesIfIgnore) {
+                            deferred.resolve();
+                        } else {
+                            deferred.reject();
+                        }
                     }
                 } else {
                     confirm(msg) ? deferred.resolve() : deferred.reject();
@@ -125,14 +129,34 @@
                 };
             };
 
-            serviceInstance.prompt = function (prompt, title, msg, value) {
+            serviceInstance.prompt = function (prompt, title, msg, value, inputType, cancelLabel, okLabel, helpText, hideCancel) {
                 return $dialog.openConfirm({
                     template: basePath + '/html/prompt.html',
+                    showClose: !hideCancel,
                     controller: ['$scope', function ($scope) {
-                        angular.extend($scope, {prompt: prompt, title: title, msg: msg, value: value});
+                        angular.extend($scope, {
+                            prompt: prompt,
+                            title: title,
+                            msg: msg,
+                            value: value,
+                            inputType: inputType,
+                            cancelLabel: cancelLabel,
+                            hideCancel: hideCancel,
+                            okLabel: okLabel,
+                            helpText: $sce.trustAsHtml(helpText)
+                        });
                         setTimeout(function () {document.getElementById('promptValue').focus();}, 750);
                     }]
                 });
+            };
+
+            serviceInstance.defaultSuccess = function () {
+                return serviceInstance.success('Success');
+            };
+
+            serviceInstance.defaultError = function (obj) {
+                var extra = obj && obj.data ? ( ': ' + (obj.data.extra || obj.data)) : '';
+                return serviceInstance.error('Error' + extra);
             };
 
             return serviceInstance;

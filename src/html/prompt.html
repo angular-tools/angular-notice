@@ -1,0 +1,31 @@
+<div class="dialog-contents">
+    <h3 class="title">{{title}}</h3>
+
+    <div class="row">
+        <div class="col-md-12">
+            <p ng-if="msg">{{msg}}</p>
+
+            <ng-form name="promptForm">
+                <div class="form-horizontal">
+                    <div class="form-group">
+                        <label class="col-xs-2 control-label" for="promptValue">{{prompt}}:</label>
+
+                        <div class="col-xs-10">
+                            <input type="{{inputType||'text'}}" class="form-control" ng-model="value" id="promptValue" placeholder="Enter {{prompt|lowercase}}" />
+
+                            <p class="help-block" ng-if="helpText" ng-bind-html="helpText"></p>
+                        </div>
+                    </div>
+
+                    <br />&nbsp
+
+                    <div class="pull-right">
+                        <a href="" ng-click="closeThisDialog()" class="text-muted" ng-if="!hideCancel">{{cancelLabel || 'Cancel'}}</a>&nbsp;&nbsp;&nbsp;
+                        <button type="button" ng-click="confirm(value)" class="btn btn-primary" ng-disabled="!value"><i class="fa fa-check-circle"></i> {{okLabel || 'OK'}}</button>
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+            </ng-form>
+        </div>
+    </div>
+</div>
