@@ -1,10 +1,6 @@
 (function () {
     'use strict';
 
-    var scripts = document.getElementsByTagName("script");
-    var currentScriptPath = scripts[scripts.length - 1].src;
-    var basePath = currentScriptPath.substring(0, currentScriptPath.lastIndexOf('/') + 1) + '..';
-
     var m = angular.module('notice', ['ngDialog', 'angular-loading-bar', 'session']);
 
     m.config(['ngDialogProvider', function (ngDialogProvider) {
@@ -131,7 +127,7 @@
 
             serviceInstance.prompt = function (prompt, title, msg, value, inputType, cancelLabel, okLabel, helpText, hideCancel) {
                 return $dialog.openConfirm({
-                    template: basePath + '/html/prompt.html',
+                    template: '/static/bower_components/angular-notice/src/html/prompt.html',
                     showClose: !hideCancel,
                     controller: ['$scope', function ($scope) {
                         angular.extend($scope, {
