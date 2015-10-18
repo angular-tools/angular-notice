@@ -14,6 +14,10 @@
             defaults = theDefaults;
         };
 
+        this.automaticNotices = function (setter) {
+            defaults.automaticNotices = setter;
+        };
+
         this.$get = ['$q', '$http', '$timeout', 'ngDialog', '$window', '$rootScope', '$session', '$sce', function ($q, $http, $timeout, $dialog, $window, $rootScope, $session, $sce) {
             var serviceInstance = {};
 
@@ -154,6 +158,25 @@
                 var extra = obj && obj.data ? ( ': ' + (obj.data.extra || obj.data)) : '';
                 return serviceInstance.error('Error' + extra);
             };
+
+            if (defaults.automaticNotices === true) {
+                var message, type;
+                var getParameterByName = function (name) {
+                    var match = RegExp('[?&]' + name + '=([^&]*)').exec(window.location.search);
+                    return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
+                };
+
+                if (message = getParameterByName('pnotify_success')) {
+                    type = 'success';
+                } else if (message = getParameterByName('pnotify_error')) {
+                    type = 'error';
+                }
+
+                if (message && type) {
+                    var txt = $('<div>' + message + '</div>').text();
+                    $timeout(function () {serviceInstance[type](txt)}, 1000);
+                }
+            }
 
             return serviceInstance;
         }];
