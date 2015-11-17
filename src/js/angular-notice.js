@@ -24,7 +24,7 @@
             serviceInstance.show = function (obj) {
                 if (obj && (obj.text || obj.title)) {
                     if (defaults.pNotify) {
-                        new PNotify(obj);
+                        new PNotify(angular.extend({}, obj, {title_escape: !obj.html, text_escape: !obj.html}));
                     } else {
                         alert(obj.text || obj.title);
                     }
@@ -101,31 +101,31 @@
                 return promise;
             };
 
-            serviceInstance.success = function (msg, sticky) {
-                return serviceInstance.show({text: msg, title: false, type: 'success', hide: !sticky});
+            serviceInstance.success = function (msg, sticky, html) {
+                return serviceInstance.show({text: msg, title: false, type: 'success', hide: !sticky, html: html});
             };
 
-            serviceInstance.error = function (msg, sticky) {
-                return serviceInstance.show({text: msg, title: false, type: 'error', hide: !sticky});
+            serviceInstance.error = function (msg, sticky, html) {
+                return serviceInstance.show({text: msg, title: false, type: 'error', hide: !sticky, html: html});
             };
 
-            serviceInstance.info = function (msg, sticky) {
-                return serviceInstance.show({text: msg, title: false, type: 'info', hide: !sticky});
+            serviceInstance.info = function (msg, sticky, html) {
+                return serviceInstance.show({text: msg, title: false, type: 'info', hide: !sticky, html: html});
             };
 
-            serviceInstance.attach = function (id, msg, type, sticky, waitForElement) {
+            serviceInstance.attach = function (id, msg, type, sticky, waitForElement, html) {
                 var ele = angular.element(id);
 
                 if (ele.length) {
-                    return serviceInstance.show({text: msg, title: false, type: type || 'notice', hide: !sticky, stack: {"dir1": "down", "dir2": "left", "context": ele}});
+                    return serviceInstance.show({text: msg, title: false, type: type || 'notice', hide: !sticky, html: html, stack: {"dir1": "down", "dir2": "left", "context": ele}});
                 } else if (waitForElement || (typeof(waitForElement) === 'undefined')) {
                     setTimeout(serviceInstance.attach, 100, id, msg, type, sticky, waitForElement);
                 }
             };
 
-            serviceInstance.promise = function (msg, type, sticky) {
+            serviceInstance.promise = function (msg, type, sticky, html) {
                 return function () {
-                    serviceInstance.show({text: msg, title: false, type: type || 'info', hide: !sticky});
+                    serviceInstance.show({text: msg, title: false, type: type || 'info', html: html, hide: !sticky});
                 };
             };
 
