@@ -31,6 +31,12 @@
                 }
             };
 
+            serviceInstance.hideAll = function () {
+                if (defaults.pNotify) {
+                    PNotify.removeAll();
+                }
+            };
+
             serviceInstance.confirm = function (msg, onSuccess, onCancel) {
                 return serviceInstance.confirm2(msg, onSuccess, onCancel, false, 'Confirmation', 'Confirm', 'Cancel');
             };
