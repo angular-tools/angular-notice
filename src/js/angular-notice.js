@@ -65,7 +65,7 @@
                             plain: true,
                             template: '<div class="dialog-contents"><h3 class="title">' + title + '</h3><p>' + msg + '</p>' +
                             (neverShowId ? '<p class="text-small"><label class="text-muted"><input type="checkbox" ng-model="neverShow"> Never show this message again</label></p>' : '' ) +
-                            '<br/><p align="right"><button class="btn btn-default" ng-click="no()">' + noLabel + '</button> ' +
+                            '<br/><p align="right">' + (noLabel !== false ? '<button class="btn btn-default" ng-click="no()">' + noLabel + '</button> ' : '') +
                             '<button ng-click="yes()" class="btn btn-primary"><b>' + yesLabel + '</b></button></p></div>',
                             controller: ['$scope', function ($scope) {
                                 $scope.no = function () {
