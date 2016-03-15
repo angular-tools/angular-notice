@@ -41,6 +41,15 @@
                 return serviceInstance.confirm2(msg, onSuccess, onCancel, false, 'Confirmation', 'Confirm', 'Cancel');
             };
 
+            serviceInstance.alert = function (msg, title) {
+                var deferred = $q.defer();
+
+                serviceInstance.confirm2(msg, null, null, null, title || null, 'OK', false)
+                    .then(deferred.resolve, deferred.resolve);
+
+                return deferred.promise;
+            };
+
             serviceInstance.confirm2 = function (msg, onSuccess, onCancel, neverShowId, title, yesLabel, noLabel, yesIfIgnore) {
                 var deferred = $q.defer();
                 var promise = deferred.promise;
@@ -63,30 +72,28 @@
                     if (!neverShowId || !$session.cookie("confirm_" + neverShowId)) {
                         $dialog.openConfirm({
                             plain: true,
-                            template: '<div class="dialog-contents"><h3 class="title">' + title + '</h3><p>' + msg + '</p>' +
+                            template: '<div class="dialog-contents">' + (title ? '<h3 class="title">' + title + '</h3>' : '') + '<p>' + msg + '</p>' +
                             (neverShowId ? '<p class="text-small"><label class="text-muted"><input type="checkbox" ng-model="neverShow"> Never show this message again</label></p>' : '' ) +
                             '<br/><p align="right">' + (noLabel !== false ? '<button class="btn btn-default" ng-click="no()">' + noLabel + '</button> ' : '') +
                             '<button ng-click="yes()" class="btn btn-primary"><b>' + yesLabel + '</b></button></p></div>',
                             controller: ['$scope', function ($scope) {
                                 $scope.no = function () {
-                                    deferred.reject();
                                     $scope.done(1);
+                                    $scope.closeThisDialog();
                                 };
 
                                 $scope.yes = function () {
-                                    deferred.resolve();
                                     $scope.done(2);
+                                    $scope.confirm();
                                 };
 
                                 $scope.done = function (v) {
                                     if ($scope.neverShow) {
                                         $session.cookie("confirm_" + neverShowId, v, 365);
                                     }
-
-                                    $scope.closeThisDialog();
                                 };
                             }]
-                        });
+                        }).then(deferred.resolve, deferred.reject);
                     } else {
                         if ((typeof(yesIfIgnore) === 'undefined') || yesIfIgnore) {
                             deferred.resolve();
